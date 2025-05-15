@@ -1,0 +1,77 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.27.0/rc.schema.json",
+  "plugins": [
+    {
+      "name": "CrudApiPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/dev-proxy-plugins.dll",
+      "configSection": "feedbackApi",
+      "urlsToWatch": [
+        "https://api.ecs.eu/feedback"
+      ]
+    },
+    {
+      "name": "LatencyPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/dev-proxy-plugins.dll",
+      "configSection": "apiLatencyPlugin",
+      "urlsToWatch": [
+        "https://api.ecs.eu/*"
+      ]
+    },
+    {
+      "name": "LatencyPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/dev-proxy-plugins.dll",
+      "configSection": "llmLatencyPlugin",
+      "urlsToWatch": [
+        "https://*.openai.azure.com/openai/deployments/*/chat/completions*"
+      ]
+    },
+    {
+      "name": "OpenAIMockResponsePlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/dev-proxy-plugins.dll",
+      "urlsToWatch": [
+        "https://*.openai.azure.com/openai/deployments/*/chat/completions*"
+      ]
+    },
+    {
+      "name": "OpenAITelemetryPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/dev-proxy-plugins.dll",
+      "configSection": "openAITelemetryPlugin"
+    }
+  ],
+  "feedbackApi": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.27.0/crudapiplugin.schema.json",
+    "apiFile": "feedbackApi.json"
+  },
+  "apiLatencyPlugin": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.27.0/latencyplugin.schema.json",
+    "minMs": 200,
+    "maxMs": 500
+  },
+  "llmLatencyPlugin": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.27.0/latencyplugin.schema.json",
+    "minMs": 500,
+    "maxMs": 2000
+  },
+  "openAITelemetryPlugin": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.28.0/openaitelemetryplugin.schema.json",
+    "currency": "EUR",
+    "includeCosts": true,
+    "pricesFile": "azure-ai-prices.json"
+  },
+  "urlsToWatch": [
+    "https://api.ecs.eu/*",
+    "https://*.openai.azure.com/openai/deployments/*/chat/completions*"
+  ],
+  "languageModel": {
+    "enabled": true,
+    "model": "llama3.2"
+  },
+  "logLevel": "trace",
+  "newVersionNotification": "stable",
+  "showSkipMessages": true
+}
