@@ -5,58 +5,6 @@
  * labels (pills) in a modern UI.
  */
 
-// Mock data with pre-assigned categories
-const mockFeedbackData = [
-  {
-    "id": 1,
-    "feedback": "The presentation slides were very well designed and informative. Would be great to have them shared with all attendees afterward.",
-    "date": "2025-05-14T15:30:00",
-    "category": "for-organizers"
-  },
-  {
-    "id": 2,
-    "feedback": "The speaker was excellent but the Q&A session was cut short. Please allocate more time for questions in future events.",
-    "date": "2025-05-14T16:45:00",
-    "category": "for-organizers"
-  },
-  {
-    "id": 3,
-    "feedback": "Try to speak more slowly and enunciate more clearly. Some attendees in the back had trouble hearing you.",
-    "date": "2025-05-14T14:20:00",
-    "category": "for-speakers"
-  },
-  {
-    "id": 4,
-    "feedback": "The coffee during the break was amazing!",
-    "date": "2025-05-14T10:15:00",
-    "category": "for-organizers"
-  },
-  {
-    "id": 5,
-    "feedback": "Include more real-world examples in your next presentation to better illustrate the concepts.",
-    "date": "2025-05-15T09:30:00",
-    "category": "for-speakers"
-  },
-  {
-    "id": 6,
-    "feedback": "The room was too cold, please adjust the temperature for tomorrow's sessions.",
-    "date": "2025-05-15T11:10:00",
-    "category": "for-organizers"
-  },
-  {
-    "id": 7,
-    "feedback": "I really liked the speaker's tie.",
-    "date": "2025-05-15T13:45:00",
-    "category": "useless"
-  },
-  {
-    "id": 8,
-    "feedback": "Your slides had too much text. Consider using more visuals and less text for better audience engagement.",
-    "date": "2025-05-15T10:20:00",
-    "category": "for-speakers"
-  }
-];
-
 /**
  * Format a date string into a human-readable format
  * @param {string} dateString - ISO date string
@@ -110,18 +58,12 @@ function createEvaluationHTML(evaluation) {
 }
 
 /**
- * Fetches evaluations with a simulated delay
+ * Fetches evaluations from the API
  * @return {Promise<Array>} Promise resolving to array of evaluations
  */
 async function fetchEvaluations() {
-  // Simulate network delay (1-2 seconds)
-  const delay = Math.floor(Math.random() * 1000) + 1000;
-  
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(mockFeedbackData);
-    }, delay);
-  });
+  const response = await fetch('http://api.ecs.eu/feedback')
+  return await response.json();
 }
 
 /**
