@@ -20,6 +20,15 @@
       ]
     },
     {
+      "name": "OpenAITelemetryPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "configSection": "openAITelemetryPlugin",
+      "urlsToWatch": [
+        "https://*.openai.azure.com/openai/deployments/*/chat/completions*"
+      ]
+    },
+    {
       "name": "CrudApiPlugin",
       "enabled": true,
       "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
@@ -51,10 +60,14 @@
     "minMs": 500,
     "maxMs": 2000
   },
+  "openAITelemetryPlugin": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/openaitelemetryplugin.schema.json",
+    "currency": "EUR",
+    "includeCosts": true,
+    "pricesFile": "azure-ai-prices.json"
+  },
   "languageModel": {
-    "enabled": true,
-    "model": "Phi-4-mini-instruct-generic-gpu",
-    "url": "http://localhost:5272/v1"
+    "enabled": true
   },
   "logLevel": "information",
   "newVersionNotification": "stable",

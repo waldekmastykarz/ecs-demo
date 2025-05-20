@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/openaitelemetryplugin.pricesfile.schema.json",
+  "prices": {
+    "o4-mini": {
+      "input": 0.97,
+      "output": 3.87
+    },
+    "llama3.2": {
+      "input": 0.97,
+      "output": 3.87
+    }
+  }
+}
