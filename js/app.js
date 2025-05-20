@@ -58,12 +58,42 @@ function createEvaluationHTML(evaluation) {
 }
 
 /**
- * Fetches evaluations from the API
+ * Fetches evaluations from the API with retry logic
+ * @param {number} maxRetries - Maximum number of retry attempts
+ * @param {number} attempt - Current attempt number
  * @return {Promise<Array>} Promise resolving to array of evaluations
  */
-async function fetchEvaluations() {
-  const response = await fetch('http://api.ecs.eu/feedback')
-  return await response.json();
+async function fetchEvaluations(maxRetries = 3, attempt = 1) {
+  try {
+    const response = await fetch('http://api.ecs.eu/feedback');
+    
+    if (!response.ok) {
+      // Handle 429 Too Many Requests with Retry-After header
+      if (response.status === 429 && attempt <= maxRetries) {
+        const retryAfter = response.headers.get('Retry-After');
+        const delaySeconds = retryAfter ? parseInt(retryAfter, 10) : 5;
+        console.log(`Rate limited. Retrying after ${delaySeconds} seconds...`);
+        
+        await new Promise(resolve => setTimeout(resolve, delaySeconds * 1000));
+        return fetchEvaluations(maxRetries, attempt + 1);
+      }
+      
+      throw new Error(`API responded with status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    if (attempt < maxRetries) {
+      // Exponential backoff for other errors
+      const backoffTime = Math.min(Math.pow(2, attempt) * 500, 5000);
+      console.log(`Attempt ${attempt} failed. Retrying after ${backoffTime}ms...`);
+      
+      await new Promise(resolve => setTimeout(resolve, backoffTime));
+      return fetchEvaluations(maxRetries, attempt + 1);
+    }
+    
+    throw new Error(`Failed to fetch evaluations after ${maxRetries} attempts: ${error.message}`);
+  }
 }
 
 /**
