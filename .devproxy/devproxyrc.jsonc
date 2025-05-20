@@ -20,6 +20,15 @@
       ]
     },
     {
+      "name": "EntraMockResponsePlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "configSection": "entraMocks",
+      "urlsToWatch": [
+        "https://login.microsoftonline.com/*"
+      ]
+    },
+    {
       "name": "OpenAITelemetryPlugin",
       "enabled": true,
       "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
@@ -46,6 +55,9 @@
       ]
     }
   ],
+  "entraMocks": {
+    "mocksFile": "entra-mocks.jsonc"
+  },
   "feedbackApi": {
     "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/crudapiplugin.schema.json",
     "apiFile": "feedback-api.json"

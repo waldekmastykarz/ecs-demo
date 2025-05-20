@@ -5,6 +5,27 @@
  * labels (pills) in a modern UI.
  */
 
+// MSAL configuration
+const msalConfig = {
+  auth: {
+    clientId: 'e3afa8d1-edb1-4587-92a0-8310c5ecaa3c',
+    authority: 'https://login.microsoftonline.com/ef8c0e1b-4ee8-4e9e-a24b-64fe0def8a75',
+    redirectUri: window.location.origin,
+  },
+  cache: {
+    cacheLocation: 'sessionStorage',
+    storeAuthStateInCookie: false,
+  },
+};
+
+// Request scopes for the API
+const loginRequest = {
+  scopes: ['api://api.ecs.eu/Feedback.Read']
+};
+
+// Initialize MSAL instance
+const msalInstance = new msal.PublicClientApplication(msalConfig);
+
 const llmUrl = 'https://ecs.openai.azure.com/openai/deployments/o4-mini/chat/completions?api-version=2025-01-01-preview';
 const model = 'o4-mini';
 
@@ -16,6 +37,75 @@ const openai = new OpenAI({
   apiKey: 'steve',
   dangerouslyAllowBrowser: true
 });
+
+/**
+ * Gets an access token using MSAL
+ * @returns {Promise<string|null>} Access token or null if not available
+ */
+async function getAccessToken() {
+  try {
+    // Look for accounts that MSAL already knows about
+    const currentAccounts = msalInstance.getAllAccounts();
+    
+    // If no accounts found, user needs to log in first
+    if (currentAccounts.length === 0) {
+      return null;
+    }
+    
+    // Use the first account if multiple exist
+    const account = currentAccounts[0];
+    
+    // Get token silently if possible
+    const tokenResponse = await msalInstance.acquireTokenSilent({
+      scopes: loginRequest.scopes,
+      account: account
+    });
+    
+    return tokenResponse.accessToken;
+  } catch (error) {
+    console.error('Error acquiring token silently:', error);
+    
+    // If silent token acquisition fails, user needs to log in again
+    return null;
+  }
+}
+
+/**
+ * Initiates login with redirect
+ * @returns {void} Redirects to Microsoft login page
+ */
+function login() {
+  // Redirect to Microsoft login page
+  msalInstance.loginRedirect(loginRequest)
+    .catch(error => {
+      console.error('Error during login redirect:', error);
+    });
+}
+
+/**
+ * Logs out the current user
+ */
+function logout() {
+  const logoutRequest = {
+    account: msalInstance.getAccountByHomeId(msalInstance.getAllAccounts()[0].homeAccountId),
+    postLogoutRedirectUri: window.location.origin,
+  };
+  
+  // Redirect to Microsoft logout page
+  msalInstance.logoutRedirect(logoutRequest)
+    .catch(error => {
+      console.error('Error during logout redirect:', error);
+    });
+}
+
+/**
+ * Checks if a user is currently logged in
+ * @returns {Promise<boolean>} True if user is logged in
+ */
+async function isLoggedIn() {
+  const currentAccounts = msalInstance.getAllAccounts();
+  return currentAccounts.length > 0;
+}
 
 /**
  * Format a date string into a human-readable format
@@ -74,7 +164,24 @@ function createEvaluationHTML(evaluation) {
  * @return {Promise<Array>} Promise resolving to array of evaluations
  */
 async function fetchEvaluations() {
-  const response = await fetch('http://api.ecs.eu/feedback')
+  // Get access token
+  const accessToken = await getAccessToken();
+  
+  if (!accessToken) {
+    throw new Error('No access token available');
+  }
+  
+  // Call the API with the access token
+  const response = await fetch('http://api.ecs.eu/feedback', {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch evaluations: ${response.statusText}`);
+  }
+
   return await response.json();
 }
 
@@ -221,27 +328,117 @@ async function analyzeFeedback(evaluations) {
 }
 
 /**
+ * Creates the login interface
+ */
+function createLoginInterface() {
+  const container = document.getElementById('evaluations-list');
+  container.innerHTML = `
+    <div class="login-container">
+      <p>Please sign in with your work or school account to view session evaluations.</p>
+      <button id="login-button" class="login-button">
+        <img src="images/ms-signin-light.svg" alt="Sign in with Microsoft" class="ms-signin-light" />
+        <img src="images/ms-signin-dark.svg" alt="Sign in with Microsoft" class="ms-signin-dark" />
+      </button>
+    </div>
+  `;
+  
+  // Add event listener to login button
+  document.getElementById('login-button').addEventListener('click', () => {
+    // With redirect, there's no need to wait or reinitialize the app here
+    // The app will be reloaded after redirect
+    login();
+  });
+}
+
+/**
  * Initializes the application
  */
 async function initApp() {
   try {
-    // Show loading state (could add a spinner here)
+    // Hide the analyze button initially, will show it after successful login
+    const analyzeButton = document.getElementById('analyze-button');
+    const analyzeContainer = document.querySelector('.analysis-container');
+    if (analyzeContainer) {
+      analyzeContainer.style.display = 'none';
+    }
+    
+    // Handle the redirect promise if this page was loaded after a redirect from Microsoft Entra
+    await msalInstance.handleRedirectPromise();
+    
+    // Check if the user is logged in
+    const userLoggedIn = await isLoggedIn();
+    
+    if (!userLoggedIn) {
+      // User is not logged in, show login interface
+      createLoginInterface();
+      return;
+    }
+    
+    // User is logged in
+    // Show the analyze button now that the user is logged in
+    if (analyzeContainer) {
+      analyzeContainer.style.display = 'flex';
+    }
+    
+    // Show loading state
+    document.getElementById('evaluations-list').innerHTML = `
+      <div class="loading-container">
+        <p>Loading evaluations...</p>
+        <span class="loader"></span>
+      </div>
+    `;
+    
+    // Add a logout button to the header
+    const header = document.querySelector('header');
+    if (!document.getElementById('logout-button')) {
+      const logoutBtn = document.createElement('button');
+      logoutBtn.id = 'logout-button';
+      logoutBtn.className = 'logout-button';
+      logoutBtn.textContent = 'Sign Out';
+      logoutBtn.addEventListener('click', () => {
+        // With redirect, page will automatically reload after logout
+        logout();
+      });
+      header.appendChild(logoutBtn);
+    }
+    
+    // Fetch and display evaluations
     const evaluations = await fetchEvaluations();
     renderEvaluations(evaluations);
 
     // Add event listener to analyze button
-    const analyzeButton = document.getElementById('analyze-button');
     analyzeButton.addEventListener('click', () => analyzeFeedback(evaluations));
-
+    
   } catch (error) {
-    console.error('Error fetching evaluations:', error);
+    console.error('Error initializing app:', error);
     document.getElementById('evaluations-list').innerHTML = `
-            <div class="evaluation-item error">
-                <p>Failed to load evaluations. Please try again later.</p>
-            </div>
-        `;
+      <div class="evaluation-item error">
+        <p>Failed to load evaluations: ${error.message}</p>
+        <button id="retry-button" class="retry-button">Retry</button>
+      </div>
+    `;
+    
+    // Add event listener to retry button
+    document.getElementById('retry-button')?.addEventListener('click', initApp);
   }
 }
+
+// Register event callbacks for MSAL
+msalInstance.addEventCallback((event) => {
+  // With redirect flow, most events will happen during page load after redirects
+  // These logs help with debugging
+  if (event.eventType === msal.EventType.LOGIN_SUCCESS) {
+    console.log('Login successful');
+  } else if (event.eventType === msal.EventType.LOGIN_FAILURE) {
+    console.error('Login failed:', event.error);
+  } else if (event.eventType === msal.EventType.LOGOUT_SUCCESS) {
+    console.log('Logout successful');
+  } else if (event.eventType === msal.EventType.HANDLE_REDIRECT_START) {
+    console.log('Starting to handle redirect response');
+  } else if (event.eventType === msal.EventType.HANDLE_REDIRECT_END) {
+    console.log('Finished handling redirect response');
+  }
+});
 
 // Initialize the app when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initApp);

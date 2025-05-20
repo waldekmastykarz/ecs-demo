@@ -1,5 +1,11 @@
 {
   "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/crudapiplugin.apifile.schema.json",
+  "auth": "entra",
+  "entraAuthConfig": {
+    "audience": "api://api.ecs.eu",
+    "issuer": "https://sts.windows.net/ef8c0e1b-4ee8-4e9e-a24b-64fe0def8a75/",
+    "scopes": ["Feedback.Read"]
+  },
   "actions": [
     {
       "action": "getAll"
