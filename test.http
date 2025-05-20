@@ -1,0 +1,42 @@
+# @name listFeedback
+GET https://api.ecs.eu/feedback
+Content-Type: application/json
+
+###
+
+# @name createFeedback
+POST https://api.ecs.eu/feedback
+Content-Type: application/json
+
+{
+  "id": {{$randomInt 9 1000000}},
+  "feedback": "The presentation slides were very well designed and informative. Would be great to have them shared with all attendees afterward.",
+  "date": "{{$datetime iso8601}}"
+}
+
+###
+
+# @feedback=The presentation slides were very well designed and informative. Would be great to have them shared with all attendees afterward.
+# @feedback=The speaker was excellent but the Q&A session was cut short. Please allocate more time for questions in future events.
+# @feedback=Try to speak more slowly and enunciate more clearly. Some attendees in the back had trouble hearing you.
+# @feedback=The coffee during the break was amazing!
+
+@feedback = {{createFeedback.request.body.feedback}}
+
+POST http://localhost:11434/v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "llama3.2",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Classify the following piece of feedback into one of the following categories: for-organizers, for-speakers, useless. Respond with the category name only. The feedback is:"
+    },
+    {
+      "role": "user",
+      "content": "{{feedback}}"
+    }
+  ],
+  "stream": false
+}
