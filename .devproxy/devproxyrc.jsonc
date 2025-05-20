@@ -5,13 +5,36 @@
       "name": "LatencyPlugin",
       "enabled": true,
       "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
-      "configSection": "apiLatencyPlugin"
+      "configSection": "apiLatencyPlugin",
+      "urlsToWatch": [
+        "http://api.ecs.eu/*"
+      ]
+    },
+    {
+      "name": "LatencyPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "configSection": "llmLatencyPlugin",
+      "urlsToWatch": [
+        "https://*.openai.azure.com/openai/deployments/*/chat/completions*"
+      ]
     },
     {
       "name": "CrudApiPlugin",
       "enabled": true,
       "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
-      "configSection": "feedbackApi"
+      "configSection": "feedbackApi",
+      "urlsToWatch": [
+        "http://api.ecs.eu/feedback"
+      ]
+    },
+    {
+      "name": "OpenAIMockResponsePlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "urlsToWatch": [
+        "https://*.openai.azure.com/openai/deployments/*/chat/completions*"
+      ]
     }
   ],
   "feedbackApi": {
@@ -23,9 +46,16 @@
     "minMs": 200,
     "maxMs": 500
   },
-  "urlsToWatch": [
-    "http://api.ecs.eu/*"
-  ],
+  "llmLatencyPlugin": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/latencyplugin.schema.json",
+    "minMs": 500,
+    "maxMs": 2000
+  },
+  "languageModel": {
+    "enabled": true,
+    "model": "Phi-4-mini-instruct-generic-gpu",
+    "url": "http://localhost:5272/v1"
+  },
   "logLevel": "information",
   "newVersionNotification": "stable",
   "showSkipMessages": true

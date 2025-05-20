@@ -5,6 +5,18 @@
  * labels (pills) in a modern UI.
  */
 
+const llmUrl = 'https://ecs.openai.azure.com/openai/deployments/o4-mini/chat/completions?api-version=2025-01-01-preview';
+const model = 'o4-mini';
+
+// Import OpenAI from CDN
+import OpenAI from 'https://cdn.jsdelivr.net/npm/openai@4.98.0/+esm';
+
+const openai = new OpenAI({
+  baseURL: llmUrl,
+  apiKey: 'steve',
+  dangerouslyAllowBrowser: true
+});
+
 /**
  * Format a date string into a human-readable format
  * @param {string} dateString - ISO date string
@@ -88,7 +100,57 @@ function renderEvaluations(evaluations) {
 }
 
 /**
- * Analyzes feedback with a simulated delay
+ * Retrieves the category of feedback using AI
+ * @param {string} feedbackText - The feedback text to categorize
+ * @return {Promise<string>} Promise resolving to the category
+ */
+async function getEvaluationCategory(feedbackText) {
+  const validCategories = ['for-organizers', 'for-speakers', 'useless'];
+  const maxRetries = 3;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      // Call OpenAI with model
+      const response = await openai.chat.completions.create({
+        model,
+        messages: [
+          {
+            role: 'system',
+            content: `Classify the following piece of feedback into one of the following categories: ${validCategories.join(', ')}. Respond with the category name only. The feedback is:`
+          },
+          {
+            role: 'user',
+            content: feedbackText
+          }
+        ]
+      });
+
+      // Extract the category from the response
+      const category = response.choices[0].message.content.trim().toLowerCase();
+
+      // Check if it's a valid category
+      if (validCategories.includes(category)) {
+        return category;
+      }
+
+      console.log(`Attempt ${attempt}: Invalid category response "${category}". Retrying...`);
+    }
+    catch (error) {
+      // If we're on the last attempt, rethrow the error
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      console.log(`Attempt ${attempt} failed with error: ${error.message}. Retrying...`);
+    }
+  }
+
+  // If we've exhausted all retries, return a default category
+  console.warn('Failed to get a valid category after maximum retries');
+  return 'useless'; // Default fallback category after all retries fail
+}
+
+/**
+ * Analyzes feedback content using AI to categorize it
  * Shows a loading state and then reveals the pills after analysis is complete
  * @param {Array} evaluations - Array of evaluation objects
  */
@@ -100,16 +162,49 @@ async function analyzeFeedback(evaluations) {
   button.disabled = true;
   button.innerHTML = 'Analyzing <span class="loader"></span>';
 
+  // Show pills container immediately
+  evaluationsContainer.classList.add('pills-visible');
+
+  // Create a copy of evaluations to work with
+  const evaluationsCopy = [...evaluations];
+  
+  // Counter to track progress
+  let processedCount = 0;
+  const totalCount = evaluations.length;
+
   try {
-    // Simulate analysis delay (2-3 seconds)
-    const delay = Math.floor(Math.random() * 1000) + 2000;
-    await new Promise(resolve => setTimeout(resolve, delay));
+    // Process each evaluation with OpenAI API
+    const processingPromises = evaluations.map(async (evaluation, index) => {
+      try {
+        // Get category for this evaluation
+        evaluation.category = await getEvaluationCategory(evaluation.feedback);
+        
+        // Update the counter
+        processedCount++;
+        
+        // Update the button text to show progress
+        button.innerHTML = `Analyzing ${processedCount}/${totalCount} <span class="loader"></span>`;
+        
+        // Re-render all evaluations with currently available categories
+        renderEvaluations(evaluationsCopy);
+        
+        return evaluation;
+      } catch (error) {
+        console.error(`Error processing evaluation #${index}:`, error);
+        // Set default category for failed analyses
+        evaluation.category = 'useless';
+        return evaluation;
+      }
+    });
 
-    // Re-render evaluations with categories (already in the mock data)
-    renderEvaluations(evaluations);
+    // Wait for all processing to complete
+    await Promise.all(processingPromises);
 
-    // Show pills by adding a class that makes them visible
-    evaluationsContainer.classList.add('pills-visible');
+    // Final render (should be the same as the last incremental render)
+    renderEvaluations(evaluationsCopy);
+
+    // Log the analyzed evaluations for reference
+    console.log('Analyzed evaluations:', evaluationsCopy);
 
     // Update button state
     button.innerHTML = 'Analysis Complete';
@@ -130,14 +225,7 @@ async function analyzeFeedback(evaluations) {
  */
 async function initApp() {
   try {
-    // Show loading state
-    document.getElementById('evaluations-list').innerHTML = `
-      <div class="evaluation-item">
-        <p>Loading evaluations...</p>
-      </div>
-    `;
-    
-    // Fetch mock data with simulated delay
+    // Show loading state (could add a spinner here)
     const evaluations = await fetchEvaluations();
     renderEvaluations(evaluations);
 
@@ -148,10 +236,10 @@ async function initApp() {
   } catch (error) {
     console.error('Error fetching evaluations:', error);
     document.getElementById('evaluations-list').innerHTML = `
-      <div class="evaluation-item error">
-        <p>Failed to load evaluations. Please try again later.</p>
-      </div>
-    `;
+            <div class="evaluation-item error">
+                <p>Failed to load evaluations. Please try again later.</p>
+            </div>
+        `;
   }
 }
 
