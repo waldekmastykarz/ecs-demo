@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/rc.schema.json",
+  "plugins": [
+    {
+      "name": "LatencyPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "configSection": "apiLatencyPlugin"
+    },
+    {
+      "name": "CrudApiPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "configSection": "feedbackApi"
+    }
+  ],
+  "feedbackApi": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/crudapiplugin.schema.json",
+    "apiFile": "feedback-api.json"
+  },
+  "apiLatencyPlugin": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/latencyplugin.schema.json",
+    "minMs": 200,
+    "maxMs": 500
+  },
+  "urlsToWatch": [
+    "http://api.ecs.eu/*"
+  ],
+  "logLevel": "information",
+  "newVersionNotification": "stable",
+  "showSkipMessages": true
+}
