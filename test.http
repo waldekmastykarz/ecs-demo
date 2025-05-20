@@ -1,11 +1,11 @@
 # @name listFeedback
-GET https://api.ecs.eu/feedback
+GET http://api.ecs.eu/feedback
 Content-Type: application/json
 
 ###
 
 # @name createFeedback
-POST https://api.ecs.eu/feedback
+POST http://api.ecs.eu/feedback
 Content-Type: application/json
 
 {
