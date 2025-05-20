@@ -2,6 +2,17 @@
   "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/rc.schema.json",
   "plugins": [
     {
+      "name": "RetryAfterPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll"
+    },
+    {
+      "name": "GenericRandomErrorPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "configSection": "genericRandomErrorPlugin"
+    },
+    {
       "name": "LatencyPlugin",
       "enabled": true,
       "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
@@ -26,6 +37,11 @@
   "urlsToWatch": [
     "http://api.ecs.eu/*"
   ],
+  "genericRandomErrorPlugin": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/genericrandomerrorplugin.schema.json",
+    "errorsFile": "api-random-errors.json",
+    "rate": 50
+  },
   "logLevel": "information",
   "newVersionNotification": "stable",
   "showSkipMessages": true
