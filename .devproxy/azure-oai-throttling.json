@@ -1,0 +1,53 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/genericrandomerrorplugin.errorsfile.schema.json",
+  "errors": [
+    {
+      "request": {
+        "url": "https://*/*",
+        "method": "POST"
+      },
+      "responses": [
+        {
+          "statusCode": 429,
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "name": "policy-id",
+              "value": "Azure-OpenAI-throttling-test"
+            },
+            {
+              "name": "Retry-After",
+              "value": "@dynamic"
+            },
+            {
+              "name": "X-RateLimit-Remaining-Requests",
+              "value": "0"
+            },
+            {
+              "name": "X-RateLimit-Reset-Tokens",
+              "value": "48"
+            },
+            {
+              "name": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "name": "access-control-expose-headers",
+              "value": "Retry-After, X-RateLimit-Remaining-Requests, X-RateLimit-Reset-Tokens"
+            }
+          ],
+          "body": {
+            "error": {
+              "type": "tokens",
+              "param": null,
+              "inner_error": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

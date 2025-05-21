@@ -2,6 +2,23 @@
   "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/rc.schema.json",
   "plugins": [
     {
+      "name": "RetryAfterPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "urlsToWatch": [
+        "https://*.openai.azure.com/openai/deployments/*/chat/completions*"
+      ]
+    },
+    {
+      "name": "GenericRandomErrorPlugin",
+      "enabled": true,
+      "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+      "configSection": "genericRandomErrorPlugin",
+      "urlsToWatch": [
+        "https://*.openai.azure.com/openai/deployments/*/chat/completions*"
+      ]
+    },
+    {
       "name": "LatencyPlugin",
       "enabled": true,
       "pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
@@ -37,6 +54,12 @@
       ]
     }
   ],
+  "genericRandomErrorPlugin": {
+    "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/genericrandomerrorplugin.schema.json",
+    "errorsFile": "azure-oai-throttling.json",
+    "rate": 50,
+    "retryAfterInSeconds": 20
+  },
   "feedbackApi": {
     "$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v0.29.0/crudapiplugin.schema.json",
     "apiFile": "feedback-api.json"
