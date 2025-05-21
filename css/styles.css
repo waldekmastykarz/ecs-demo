@@ -67,6 +67,37 @@ header h1 {
   letter-spacing: -0.02em;
 }
 
+.submit-feedback-link {
+  padding: 6px 12px;
+  background-color: var(--accent-blue);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.submit-feedback-link:hover {
+  background-color: rgba(94, 106, 210, 0.9);
+}
+
+.nav-link {
+  padding: 6px 12px;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 main {
   flex-grow: 1;
 }
@@ -308,4 +339,80 @@ footer {
 
 .retry-button:hover {
   background-color: rgba(94, 106, 210, 0.9);
+}
+
+/* Feedback form styles */
+.feedback-container {
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  padding: 20px;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedback-form label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.feedback-form textarea {
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  margin-bottom: 16px;
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
+.submit-button {
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  align-self: flex-start;
+}
+
+.submit-button:hover {
+  background-color: rgba(94, 106, 210, 0.9);
+}
+
+.submit-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.thank-you-container {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.thank-you-container h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.thank-you-container p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
 }
