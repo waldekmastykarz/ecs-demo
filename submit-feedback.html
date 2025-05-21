@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Session Feedback</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1>Submit Session Feedback</h1>
+    </header>
+    <main>
+      <div class="feedback-container">
+        <div id="feedback-form-container">
+          <div class="feedback-form">
+            <label for="feedback-text">Your Feedback</label>
+            <textarea id="feedback-text" rows="5" placeholder="Please share your thoughts about the session..."></textarea>
+            <button id="submit-button" class="submit-button">Submit Feedback</button>
+          </div>
+        </div>
+        <div id="thank-you-container" class="thank-you-container" style="display: none;">
+          <h2>Thank You!</h2>
+          <p>Your feedback has been submitted successfully.</p>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2025 Event Management</p>
+    </footer>
+  </div>
+  <script type="module" src="js/submit-feedback.js"></script>
+</body>
+
+</html>

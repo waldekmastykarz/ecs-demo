@@ -152,14 +152,14 @@
     // Code
     {
       "request": {
-        "url": "https://login.microsoftonline.com/*/oauth2/v2.0/authorize*"
+        "url": "https://login.microsoftonline.com/ef8c0e1b-4ee8-4e9e-a24b-64fe0def8a75/oauth2/v2.0/authorize*"
       },
       "response": {
         "statusCode": 302,
         "headers": [
           {
             "name": "Location",
-            "value": "http://localhost:8007/#code=abc&client_info=eyJ1aWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtYTNjZS0yNmNmOTVkMGE4ZjAiLCJ1dGlkIjoiOTE4ODA0MGQtNmM2Ny00YzViLWIxMTItMzZhMzA0YjY2ZGFkIn0&state=@dynamic&session_state=8171d85a-fe88-4de0-9b17-e25977287611"
+            "value": "https://m4pxbfj6-8007.euw.devtunnels.ms/#code=abc&client_info=eyJ1aWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtYTNjZS0yNmNmOTVkMGE4ZjAiLCJ1dGlkIjoiOTE4ODA0MGQtNmM2Ny00YzViLWIxMTItMzZhMzA0YjY2ZGFkIn0&state=@dynamic&session_state=8171d85a-fe88-4de0-9b17-e25977287611"
           }
         ]
       }
