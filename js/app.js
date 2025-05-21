@@ -173,10 +173,12 @@ async function analyzeFeedback(evaluations) {
   const totalCount = evaluations.length;
 
   try {
-    // Process each evaluation with OpenAI API
-    const processingPromises = evaluations.map(async (evaluation, index) => {
+    // Process evaluations sequentially instead of in parallel
+    for (let index = 0; index < evaluationsCopy.length; index++) {
+      const evaluation = evaluationsCopy[index];
+      
       try {
-        // Get category for this evaluation
+        // Get category for this evaluation - process one at a time
         evaluation.category = await getEvaluationCategory(evaluation.feedback);
         
         // Update the counter
@@ -187,20 +189,14 @@ async function analyzeFeedback(evaluations) {
         
         // Re-render all evaluations with currently available categories
         renderEvaluations(evaluationsCopy);
-        
-        return evaluation;
       } catch (error) {
         console.error(`Error processing evaluation #${index}:`, error);
         // Set default category for failed analyses
         evaluation.category = 'useless';
-        return evaluation;
       }
-    });
+    }
 
-    // Wait for all processing to complete
-    await Promise.all(processingPromises);
-
-    // Final render (should be the same as the last incremental render)
+    // Final render (in case the last one had an error)
     renderEvaluations(evaluationsCopy);
 
     // Log the analyzed evaluations for reference
