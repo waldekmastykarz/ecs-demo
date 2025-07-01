@@ -1,0 +1,113 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start app",
+            "dependsOn": [
+                "Start web server",
+                "Host tunnel",
+                "Start Foundry",
+                "Start Dev Proxy"
+            ],
+            "dependsOrder": "sequence",
+        },
+        {
+            "label": "Stop app",
+            "dependsOn": [
+                "Stop web server",
+                "Stop tunnel",
+                "Stop Dev Proxy"
+            ],
+            "dependsOrder": "sequence",
+        },
+        {
+            "label": "Start web server",
+            "type": "npm",
+            "script": "start",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "http-server",
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Starting up http-server",
+                    "endsPattern": "Available on:"
+                }
+            }
+        },
+        {
+            "label": "Host tunnel",
+            "type": "shell",
+            "command": "devtunnel",
+            "args": [
+                "host",
+                "-p",
+                "8007",
+                "-a"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Hosting port",
+                    "endsPattern": "Ready to accept connections for tunnel"
+                }
+            }
+        },
+        {
+            "label": "Stop tunnel",
+            "type": "shell",
+            "command": "pkill",
+            "args": [
+                "-f",
+                "devtunnel"
+            ]
+        },
+        {
+            "label": "Start Dev Proxy",
+            "type": "devproxy",
+            "command": "start",
+            "isBackground": true,
+            "problemMatcher": "$devproxy-watch"
+        },
+        {
+            "label": "Stop Dev Proxy",
+            "type": "devproxy",
+            "command": "stop"
+        },
+        {
+            "label": "Stop npm server",
+            "type": "shell",
+            "command": "pkill",
+            "args": [
+                "-f",
+                "http-server"
+            ]
+        },
+        {
+            "label": "Start Foundry",
+            "type": "shell",
+            "command": "npm",
+            "args": [
+                "run",
+                "start:foundry"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "beginsPattern": "🟢",
+                    "endsPattern": "Service is Started"
+                }
+            }
+        }
+    ]
+}

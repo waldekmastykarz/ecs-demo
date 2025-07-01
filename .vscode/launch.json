@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to Chrome",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:8007"
+    },
+    {
+      "name": "Launch with Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8007",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Start app",
+      "postDebugTask": "Stop app"
+    },
+    {
+      "name": "Attach to Edge",
+      "type": "msedge",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:8007"
+    },
+    {
+      "name": "Launch with Edge",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:8007",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Start app",
+      "postDebugTask": "Stop app"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Launch Server and Debug in Edge",
+      "configurations": ["Launch with Edge"]
+    },
+    {
+      "name": "Launch Server and Debug in Chrome",
+      "configurations": ["Launch with Chrome"]
+    }
+  ]
+}
